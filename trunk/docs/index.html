@@ -1,0 +1,495 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE html 
+     PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+
+  <head>
+    <title>CanvaSVG — A Static SVG Tiny 1.2 Implementation Using the &lt;canvas&gt; APIs</title>
+		<link rel="stylesheet" type="text/css" href="doc.css" />
+  </head>
+
+  <body>
+
+		<div class="highlight">
+		<h1>CanvaSVG</h1>
+			<a href="mailto:contact@fuchsia-design.com">Antoine Quint</a>, SVG &amp; Client-side XML Consulting, June 1st, 2005
+		</div>
+			
+		<!-- introduction -->
+		<h2 id="intro">A Static SVG Tiny 1.2 Implementation Using the <code>&lt;canvas&gt;</code> APIs</h2>
+		<p>
+		CanvaSVG is an experiment I am conducting to get a better idea of what you can and cannot do with the new <span class="element">&lt;canvas&gt;</span> element suggested by the WHATWG. The current goal of CanvaSVG is  to provide as much of a mapping of <span class="element">&lt;canvas&gt;</span> functionalities using the SVG Tiny 1.2 grammar as possible. While ideally I could try to achieve full compliance with the Conforming Static SVG Tiny 1.2 Viewer conformance criterion, in other words implement the static graphic features of SVG Tiny 1.2 and leave out complex things like scripting and animation support.
+		</p>
+
+		<h2 id="why_bother">Why Bother?</h2>
+		<p>
+		That's a <em>very legitimate</em> question to ask. The claim has been made by people close to the source of all things <code>&lt;canvas&gt;</code> that those newly-introduced APIs were <a href="http://weblogs.mozillazine.org/hyatt/archives/2004_07.html#005928">way, way, way easier to add to Safari than SVG</a>. I begged to disagree then, and I disagree still today. Of course, the level of SVG integration that we are finally seeing in modern browsers today, such as <a href="http://www.opera.com/features/svg/">Opera</a> and <a href="http://mozilla.org/projects/svg/">Mozilla</a>, is definitely a complex and lengthy endeavour. However, the argument of complexity of implementation for the level of functionlity offered by Apple with their <code>&lt;canvas&gt;</code> extension falls flat, as I think I'm showing with this effort. Basically, with a modern graphics platform underneath and a good XML foundation (Apple has both in place with <a href="http://developer.apple.com/documentation/GraphicsImaging/Reference/CGAPI-date.html">Quartz2D</a> APIs and <a href="http://xmlsoft.org/">libxml</a> integration), then implementing a conformant static SVG viewer would not take more than a week to an experienced graphics programmer. Heck, I'm not that much of an experienced graphics programmer at all and it took me all in all like 3 days of programming to produce CanvaSVG, and that's only using <code>&lt;canvas&gt;</code> and Safari's Core DOM implementation as my platform.
+		</p>
+		<p>
+		Obviously, it can be argued that <code>&lt;canvas&gt;</code>, whatever happens, will be much faster at doing what it does than an equivalent implementation using SVG markup in-lieu of APIs. I don't think so. Of course, this puppy right here isn't really fast, and I never thought it would be. Before I can actually call <code>&lt;canvas&gt;</code> APIs, I have to go through parsing of the SVG markup using Safari's DOM Core implementation. I haven't done any benchmarks, but something tells me that the performance in that environment is not very good compared to what could be done using libxml straight away or even coming up with a customized parser in C. Basically, I think Apple would have done something just as fast with a static SVG Tiny implementation if done right. Usually the things that may make cost an SVG implementation performance-wise are things like maintaining a DOM alive and SMIL-based animation. A conforming static user agents wouldn't have to cater for any of that.
+		</p>
+		<p>
+		And even if there <em>were</em> a major speed difference, what would the gain be? What major use cases for <code>&lt;canvas&gt;</code> is there that would actually require this hypothetical speed difference? I can only think of very marginal use cases that would actually require drawing an immense number of graphics shapes. The <em>disadvantages</em> of <code>&lt;canvas&gt;</code> are however easy for me to enumerate (maybe it's because I'm biased). For one, what percentage of web authors have any idea how to use immediate graphics mode APIs such as <code>&lt;canvas&gt;</code>'s? Now compare that to the number of web authors that are familiar with markup languages and DOM APIs. I just don't think there <em>is</em> a good reason to do <code>&lt;canvas&gt;</code> when you can just do SVG instead.
+		</p>
+		<p>
+		I don't really blame Apple that much for doing <code>&lt;canvas&gt;</code>. I guess it was more from a purely programmatic and standards-adhering point of view that I was disappointed that Apple was introducing this new functionality, now picked up by the WHATWG, instead of picking an existing technology. I don't think many people are actually going to use <code>&lt;canvas&gt;</code> when most modern browsers (save probably for whatever IE7 turns out to be) already support (Opera 8, Firefox 1.1, Konqueror) or will be (most likely Safari) supporting SVG. <em>Rant over</em>, for more tune into <a href="http://listserver.dreamhost.com/pipermail/whatwg-whatwg.org/2005-April/003719.html">Dean's insightful rant</a>.
+		</p>
+
+		<h2 id="future_ideas">Ideas for Future Development</h2>
+		<ul>
+			<li><strong>SVG compiler to <code>&lt;canvas&gt;</code> code</strong>: I'd like to write a program that could be run on the server and compile an SVG fragment to a <code>&lt;canvas&gt;</code> element and the necessary API calls to render the SVG. No more reason to do that than doing CanvaSVG in the first place, but it'd be fun.</li>
+			<li><strong><code>&lt;canvas&gt;</code> implementation in SVG</strong>: Someone told me that he'd like to use <code>&lt;canvas&gt;</code> APIs to generate SVG content and I might just do that someday. Same comment as the previous one.</li>
+		</ul>
+
+		<h2 id="supported_uas">Supported User Agents</h2>
+		<p>
+			The two user agents I have been developing this code against are Safari 2.0 and Firefox 1.1. As far as I know, Safari 1.3 should also work, but I haven't tested it it. I also expect that any other user agent out there that uses recent WebCore and Gecko libraries will be able to render SVG using CanvaSVG.  
+		</p>
+
+		<h2 id="demos">Demos</h2>
+		<p>
+			I have one ugly <a href="Tests/Test.xml">test case</a> that I have been writing as I was implementing SVG features, there are also the all-time classic <a href="Tests/Lion.xml">lion</a> and <a href="Tests/Tiger.xml">tiger</a> for something that you can actually look at without going blind, although the tiger sample will render badly in Safari due to known issues in WebCore.
+		</p>
+
+		<h2 id="download">Download</h2>
+		<p>
+			<a href="CanvaSVG.js.gz"><code>CanvaSVG.js.gz</code></a>: all the ECMAScript classes needed in one gzipped file.
+		</p>
+		
+		<h2 id="source_code">Source Code</h2>
+		<p>
+			You can see all of the source code used for this project in full syntax colored glory:
+		</p>
+		<ul>
+			<li>
+				<a href="Files/CanvaSVG.html">CanvaSVG</a> looks up <code>&lt;svg&gt;</code> elements and instantiates a <code>CanvaSVGDocument</code> for each.
+			</li>
+			<li>
+				<a href="Files/CanvaSVGDocument.html">CanvaSVGDocument</a> does all the parsing, inheritance and paint servers management and rendering of an SVG fragment.
+			</li>
+			<li>
+				<a href="Files/PathParserHandler.html">PathParserHandler</a> translates SVG <code>&lt;path&gt;</code> commands into corresponding <code>&lt;canvas&gt;</code> APIs.
+			</li>
+			<li>
+				<a href="Files/TransformParserHandler.html">TransformParserHandler</a> translates the <code>transform</code> attribute value into an array of individual commands.
+			</li>
+			<li>
+				<a href="Files/ViewBox.html">ViewBox</a> parses the <code>viewBox</code> and <code>preserveAspectRatio</code> attribute values.
+			</li>
+			<li>
+				<a href="http://www.kevlindev.com/dom/path_parser/index.htm">PathParser</a> is an event driven path parsing engine.
+			</li>
+		</ul>
+
+		<h2 id="supported_elements">Elements Support Matrix</h2>
+
+			<p>
+				<strong>Legend</strong>: <span class="supported">SUPPORTED</span> <span class="partial">PARTIAL</span> <span class="unsupported">UNSUPPORTED</span>
+			</p>
+		
+			<table>
+				<thead>
+					<tr>
+						<td>Element</td>
+						<td>Attributes</td>
+						<td>Notes</td>
+					</tr>
+				</thead>
+				<!-- svg -->
+				<tr class="partial">
+					<td rowspan="6"><span class="element">svg</span></td>
+					<td class="partial"><span class="attribute">width</span></td>
+					<td class="partial">Percentages are unsupported</td>
+				</tr>
+				<tr class="partial">
+					<td><span class="attribute">height</span></td>
+					<td>Percentages are unsupported</td>				
+				</tr>
+				<tr class="supported">
+					<td><span class="attribute">viewBox</span></td>
+					<td></td>
+				</tr>
+				<tr class="supported">
+					<td><span class="attribute">preserveAspectRatio</span></td>
+					<td></td>				
+				</tr>
+				<tr class="supported">
+					<td><span class="attribute">viewport-fill</span></td>
+					<td></td>				
+				</tr>
+				<tr class="supported">
+					<td><span class="attribute">viewport-fill-opacity</span></td>
+					<td></td>				
+				</tr>
+				<!-- g -->
+				<tr class="supported">
+					<td><span class="element">g</span></td>
+					<td></td>
+					<td></td>				
+				</tr>
+				<!-- defs -->
+				<tr class="supported">
+					<td><span class="element">defs</span></td>
+					<td></td>
+					<td></td>				
+				</tr>
+				<!-- use -->
+				<tr class="unsupported">
+					<td rowspan="5"><span class="element">use</span></td>
+					<td><span class="attribute">x</span></td>
+					<td></td>				
+				</tr>
+				<tr class="unsupported">
+					<td><span class="attribute">y</span></td>
+					<td></td>				
+				</tr>
+				<tr class="unsupported">
+					<td><span class="attribute">width</span></td>
+					<td></td>				
+				</tr>
+				<tr class="unsupported">
+					<td><span class="attribute">height</span></td>
+					<td></td>				
+				</tr>
+				<tr class="unsupported">
+					<td><span class="attribute">xlink:href</span></td>
+					<td></td>				
+				</tr>
+				<!-- image -->
+				<tr class="supported">
+					<td rowspan="5"><span class="element">image</span></td>
+					<td><span class="attribute">x</span></td>
+					<td></td>				
+				</tr>
+				<tr class="supported">
+					<td><span class="attribute">y</span></td>
+					<td></td>				
+				</tr>
+				<tr class="supported">
+					<td><span class="attribute">width</span></td>
+					<td></td>				
+				</tr>
+				<tr class="supported">
+					<td><span class="attribute">height</span></td>
+					<td></td>				
+				</tr>
+				<tr class="supported">
+					<td><span class="attribute">xlink:href</span></td>
+					<td>Only for raster graphics</td>				
+				</tr>
+				<!-- switch -->
+				<tr class="unsupported">
+					<td><span class="element">switch</span></td>
+					<td></td>
+					<td></td>				
+				</tr>
+				<!-- path -->
+				<tr class="supported">
+					<td><span class="element">path</span></td>
+					<td><span class="attribute">d</span></td>
+					<td>No arcs in SVG Tiny</td>				
+				</tr>
+				<!-- rect -->
+				<tr class="supported">
+					<td rowspan="6"><span class="element">rect</span></td>
+					<td><span class="attribute">x</span></td>
+					<td></td>
+				</tr>
+				<tr class="supported">
+					<td><span class="attribute">y</span></td>
+					<td></td>				
+				</tr>
+				<tr class="supported">
+					<td><span class="attribute">width</span></td>
+					<td></td>				
+				</tr>
+				<tr class="supported">
+					<td><span class="attribute">height</span></td>
+					<td></td>				
+				</tr>
+				<tr class="supported">
+					<td><span class="attribute">rx</span></td>
+					<td></td>				
+				</tr>
+				<tr class="supported">
+					<td><span class="attribute">ry</span></td>
+					<td></td>				
+				</tr>
+				<!-- circle -->
+				<tr class="supported">
+					<td rowspan="3"><span class="element">circle</span></td>
+					<td><span class="attribute">cx</span></td>
+					<td></td>				
+				</tr>
+				<tr class="supported">
+					<td><span class="attribute">cy</span></td>
+					<td></td>				
+				</tr>
+				<tr class="supported">
+					<td><span class="attribute">r</span></td>
+					<td></td>				
+				</tr>
+				<!-- ellipse -->
+				<tr class="supported">
+					<td rowspan="4"><span class="element">ellipse</span></td>
+					<td><span class="attribute">cx</span></td>
+					<td></td>				
+				</tr>
+				<tr class="supported">
+					<td><span class="attribute">cy</span></td>
+					<td></td>				
+				</tr>
+				<tr class="supported">
+					<td><span class="attribute">rx</span></td>
+					<td></td>				
+				</tr>
+				<tr class="supported">
+					<td><span class="attribute">ry</span></td>
+					<td></td>				
+				</tr>
+				<!-- line -->
+				<tr class="supported">
+					<td rowspan="4"><span class="element">line</span></td>
+					<td><span class="attribute">x1</span></td>
+					<td></td>				
+				</tr>
+				<tr class="supported">
+					<td><span class="attribute">y1</span></td>
+					<td></td>				
+				</tr>
+				<tr class="supported">
+					<td><span class="attribute">x2</span></td>
+					<td></td>				
+				</tr>
+				<tr class="supported">
+					<td><span class="attribute">y2</span></td>
+					<td></td>				
+				</tr>
+				<!-- polyline -->
+				<tr class="supported">
+					<td><span class="element">polyline</span></td>
+					<td><span class="attribute">points</span></td>
+					<td></td>				
+				</tr>
+				<!-- polygon -->
+				<tr class="supported">
+					<td><span class="element">polygon</span></td>
+					<td><span class="attribute">points</span></td>
+					<td></td>				
+				</tr>
+				<!-- solidColor -->
+				<tr class="supported">
+					<td rowspan="2"><span class="element">solidColor</span></td>
+					<td><span class="attribute">solid-color</span></td>
+					<td></td>				
+				</tr>
+				<tr class="supported">
+					<td><span class="attribute">solid-opacity</span></td>
+					<td></td>				
+				</tr>
+				<!-- linearGradient -->
+				<tr class="supported">
+					<td class="partial" rowspan="5"><span class="element">linearGradient</span></td>
+					<td><span class="attribute">x1</span></td>
+					<td></td>				
+				</tr>
+				<tr class="supported">
+					<td><span class="attribute">y1</span></td>
+					<td></td>				
+				</tr>
+				<tr class="supported">
+					<td><span class="attribute">x2</span></td>
+					<td></td>				
+				</tr>
+				<tr class="supported">
+					<td><span class="attribute">y2</span></td>
+					<td></td>				
+				</tr>
+				<tr class="partial">
+					<td><span class="attribute">gradientUnits</span></td>
+					<td>value <code>objectBoundingBox</code> unsupported</td>				
+				</tr>
+				<!-- radialGradient -->
+				<tr class="supported">
+					<td class="partial" rowspan="4"><span class="element">radialGradient</span></td>
+					<td><span class="attribute">cx</span></td>
+					<td></td>				
+				</tr>
+				<tr class="supported">
+					<td><span class="attribute">cy</span></td>
+					<td></td>				
+				</tr>
+				<tr class="supported">
+					<td><span class="attribute">r</span></td>
+					<td></td>				
+				</tr>
+				<tr class="partial">
+					<td><span class="attribute">gradientUnits</span></td>
+					<td>value <code>objectBoundingBox</code> unsupported</td>				
+				</tr>
+				<!-- stop -->
+				<tr class="supported">
+					<td rowspan="3"><span class="element">stop</span></td>
+					<td><span class="attribute">offset</span></td>
+					<td></td>				
+				</tr>
+				<tr class="supported">
+					<td><span class="attribute">stop-color</span></td>
+					<td></td>
+				</tr>
+				<tr class="supported">
+					<td><span class="attribute">stop-opacity</span></td>
+					<td></td>
+				</tr>
+			</table>
+	
+		<h2 id="supported_attributes">Attributes Support Matrix</h2>
+
+			<p>
+				<strong>Legend</strong>: <span class="supported">SUPPORTED</span> <span class="partial">PARTIAL</span> <span class="unsupported">UNSUPPORTED</span>
+			</p>
+
+			<table>
+				<thead>
+					<tr>
+						<td>Attribute</td>
+						<td>Notes</td>
+					</tr>
+				</thead>
+				<!-- display -->
+				<tr class="supported">
+					<td><span class="attribute">display</span></td>
+					<td></td>
+				</tr>
+				<!-- visibility -->
+				<tr class="supported">
+					<td><span class="attribute">visibility</span></td>
+					<td></td>
+				</tr>
+				<!-- transform -->
+				<tr class="partial">
+					<td><span class="attribute">transform</span></td>
+					<td>No matrices or skews due to <code>&lt;canvas&gt;</code> limitations</td>
+				</tr>
+				<!-- color -->
+				<tr class="unsupported">
+					<td><span class="attribute">color</span></td>
+					<td></td>
+				</tr>
+				<!-- fill -->
+				<tr class="partial">
+					<td><span class="attribute">fill</span></td>
+					<td>No <code>currentColor</code></td>
+				</tr>
+				<!-- stroke -->
+				<tr class="partial">
+					<td><span class="attribute">stroke</span></td>
+					<td>No <code>currentColor</code></td>
+				</tr>
+				<!-- stroke-width -->
+				<tr class="supported">
+					<td><span class="attribute">stroke-width</span></td>
+					<td></td>
+				</tr>
+				<!-- fill-opacity -->
+				<tr class="supported">
+					<td><span class="attribute">fill-opacity</span></td>
+					<td></td>
+				</tr>
+				<!-- stroke-opacity -->
+				<tr class="supported">
+					<td><span class="attribute">stroke-opacity</span></td>
+					<td></td>
+				</tr>
+				<!-- stroke-linecap -->
+				<tr class="supported">
+					<td><span class="attribute">stroke-linecap</span></td>
+					<td></td>
+				</tr>
+				<!-- stroke-linejoin -->
+				<tr class="supported">
+					<td><span class="attribute">stroke-linejoin</span></td>
+					<td></td>
+				</tr>
+				<!-- stroke-miterlimit -->
+				<tr class="supported">
+					<td><span class="attribute">stroke-miterlimit</span></td>
+					<td></td>
+				</tr>
+				<!-- stroke-dasharray -->
+				<tr class="unsupported">
+					<td><span class="attribute">stroke-dasharray</span></td>
+					<td><code>&lt;canvas&gt;</code> can't deal with that</td>
+				</tr>
+				<!-- stroke-dashoffset -->
+				<tr class="unsupported">
+					<td><span class="attribute">stroke-dashoffset</span></td>
+					<td><code>&lt;canvas&gt;</code> can't deal with that</td>
+				</tr>
+				<!-- opacity -->
+				<tr class="unsupported">
+					<td><span class="attribute">opacity</span></td>
+					<td><code>&lt;canvas&gt;</code> can't deal with that</td>
+				</tr>
+			</table>
+	
+		<h2 id="known_issues">Known Issues</h2>
+
+			<h3>Scripting Support</h3>
+			<p>
+				There is no support for scripting in CanvaSVG. However, with a little more standards compliance from user agents, Core DOM scripting could be partially implemented by registering an event listener for the <code>DOMSubtreeModified</code> event on the root <code>&lt;svg&gt;</code> element and then re-render the entire document. It would be quite a hack, but would work fine for most kind of usage of CanvaSVG.
+			</p>
+			
+			<h3>Animation Support</h3>
+			<p>
+				There is no support planned for animation in CanvaSVG. The <code>&lt;canvas&gt;</code> functionalities are static and implementing an animation engine for this would be a tremendous amount of work for a project that is supposed to be a tiny little script wrapper.
+			</p>
+
+			<h3>Bugs in <code>&lt;canvas&gt;</code> implementations</h3>
+			
+			<h4>Apple Safari</h4>
+				<ul>
+					<li>
+						There is a known bug in the <code>Context2D.bezierCurveTo</code> method the prevents the correct drawing of cubic Béziers curves (i.e. the <code>c</code>, <code>C</code>, <code>s</code> and <code>S</code> SVG path commands won't work).
+					</li>
+					<li>
+						There is a known bug that the <code>Context2D.quadraticCurveTo</code> method doesn't actually exist, whereas another method called <code>Context2D.quadraticCurveToPoint</code> can be used in place.
+					</li>
+					<li>
+						There is a bug in the <code>Context2D.drawImage</code> method and raster images in SVG won't work.
+					</li>
+					<li>
+						Currently, nothing works with a checked-out CVS version of WebKit. I'm not quite sure why, but I'm pretty sure the issue is on the WebKit end so I won't bother to look into it until a formal WebKit release nears.
+					</li>
+				</ul>
+			
+			<h4>Mozilla Firefox</h4>
+				<p>
+					As of June 20th, and possibly earlier, there are no known issues with Mozilla Firefox as the sole bug I had listed (<code>Context2D.globalAlpha</code> not working) has been fixed.
+				</p>
+
+		<h2 id="acknowledgements_references">Acknowledgements and References</h2>
+		<ul>
+			<li>
+				<a href="http://www.kevlindev.com/">Kevin Lindsey</a> hooked me up with the parsers for the <code>viewBox</code>, <code>preserveAspectRatio</code>, <code>points</code>, <code>d</code> and <code>transform</code> attributes. Kevin, you <strong>rock</strong>.
+			</li>
+			<li>
+				WHATWG <a href="http://www.whatwg.org/specs/web-apps/current-work/#the-2d"><code>&lt;canvas&gt;</code> APIs specification</a>.
+			</li>
+			<li>
+				Apple <a href="http://developer.apple.com/documentation/AppleApplications/Reference/SafariJSRef/Classes/Canvas.html"> <code>&lt;canvas&gt;</code> documentation</a> (or lack thereof).
+			</li>
+			<li>
+				W3C <a href="http://www.w3.org/TR/SVGMobile12/">SVG Tiny 1.2</a>.
+			</li>
+		</ul>
+
+		<hr />
+		<div>
+			<a href="mailto:contact@fuchsia-design.com">Antoine Quint</a>, SVG &amp; Client-side XML Consulting, June 1st, 2005
+		</div>
+
+	</body>
+
+</html>

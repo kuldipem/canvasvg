@@ -1,0 +1,82 @@
+body {	background-color: white;
+	margin: 15px;
+	background-color: white;
+	font-family: "Lucida Grande" sans-serif;}a {  text-decoration: none;  border-bottom: 1px dashed;
+  color: rgb(255,0,123);
+}a:hover {  border-bottom: 1px solid;	color: rgb(178,0,86);}
+
+p {	font-size: 13px;
+	margin: 0;
+	padding-left: 20px;	padding-right: 20px;
+	padding-bottom: 20px;
+	line-height: 1.5em;	text-align: justify;}
+
+em {
+	font-family: serif;
+}
+
+h1, h2, h3, h4, h5, h6 {
+	color: gray;
+}
+
+code {
+	font-family: monaco;
+  border-bottom: 1px solid;
+}
+
+.supported {
+	background-color: rgb(127,255,127);
+}
+
+.partial {
+	background-color: rgb(255,191,127);
+}
+
+.unsupported {
+	background-color: rgb(255,127,127);
+}
+			
+.element {
+	font-family: monaco;
+}
+
+.attribute {
+	font-family: monaco;
+}
+
+table {
+	margin-top: 20px;
+}
+
+td {
+	padding: 5px;
+}
+
+thead {
+	font-weight: bold;
+	background-color: rgb(208,208,208);
+}
+
+li {
+	list-style-type: none;
+	border-left: double;
+	padding-left: 10px;
+	margin-left: -10px;
+	line-height: 1.5em;
+	margin-bottom: 0.5em;
+}
+
+div.highlight {
+	background-color: rgb(255,236,245);
+	margin-left: -15px;
+	margin-right: -15px;
+	padding-left: 20px;
+	padding-bottom: 20px;
+	border-top: 1px solid gray;
+	border-bottom: 1px solid gray;
+}
+
+hr {
+	margin-top: 20px;
+}
+

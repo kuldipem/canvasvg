@@ -1,0 +1,54 @@
+<!DOCTYPE html 
+     PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+	<head>
+		<title>CanvaSVG</title>
+		<script src="../src/path_parser.js" />
+    <script src="../src/transform_parser.js" />
+		<script src="../src/ViewBox.es" />
+		<script src="../src/PathParserHandler.es" />
+		<script src="../src/TransformParserHandler.es" />
+		<script src="../src/CanvaSVGDocument.es" />
+		<script src="../src/CanvaSVG.es" />
+	</head>
+
+	<body onload="CanvaSVG()">
+
+		<div style="position: absolute; left: 20px; top: 0;">
+			<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="400" height="400" fill="red" viewBox="20 20 360 400" viewport-fill="yellow" viewport-fill-opacity="0.5">
+				<defs>
+					<linearGradient id="myLinearGradient" gradientUnits="userSpaceOnUse" x1="150" y1="200" x2="250" y2="200">
+						<stop offset="0" stop-color="rgb(100%,0%,0%)" stop-opacity="0.5" />
+						<stop offset="0.5" stop-color="green" />
+						<stop offset="1" stop-color="blue" />
+					</linearGradient>
+					<radialGradient id="myRadialGradient" gradientUnits="userSpaceOnUse" cx="100" cy="300" r="50">
+						<stop offset="0" stop-color="red" />
+						<stop offset="0.5" stop-color="green" />
+						<stop offset="1" stop-color="magenta" />
+					</radialGradient>
+					<solidColor id="solidCrimson" solid-color="crimson" solid-opacity="0.7" />
+				</defs>
+				<g fill="red" stroke="white" fill-opacity="0.5" transform="scale(0.5) rotate(30)">
+					<rect width="200" height="200" fill="black" />
+					<rect x="10" y="10" width="180" height="180" />
+				</g>
+ 				<rect x="200" width="200" height="200" fill="green" />
+				<rect y="200" width="200" height="200" fill="blue" />
+				<rect x="200" y="200" width="200" height="200" />
+				<polygon fill="pink" stroke="blue" stroke-width="10" points="350,75 379,161 469,161 397,215 423,301 350,250 277,301 303,215 231,161 321,161" transform="scale(0.8)" stroke-linejoin="round" />
+				<polyline fill="url(#solidCrimson)" stroke="purple" stroke-width="20" points="50,375 150,375 150,325 250,325 250,375 350,375 350,250 450,250 450,375 550,375 550,175 650,175 650,375 750,375 750,100 850,100 850,375 950,375 950,25 1050,25 1050,375 1150,375" transform="scale(0.3)" stroke-linecap="round" />
+				<circle cx="200" cy="200" r="100" fill="rgb(255,0,123)" stroke="purple" stroke-width="5" fill-opacity="0.5" stroke-opacity="0.5" />
+				<circle cx="200" cy="200" r="50" fill="url(#myLinearGradient)" stroke="white" transform="translate(-125, -125) scale(1.25)" />
+				<path d="M100,200 C100,100 250,100 250,200 S400,300 400,200" fill="none" stroke="black" stroke-width="10" transform="translate(-50)" />
+				<rect width="100" height="100" transform="rotate(45,50,50)" fill="blue" />
+				<ellipse fill="url(#myRadialGradient)" cx="100" cy="300" rx="50" ry="50" stroke="white" stroke-width="3" />
+				<image xlink:href="stig.jpg" x="10" y="0" width="200" height="133" />
+			</svg>
+		</div>
+
+	</body>
+
+</html>
