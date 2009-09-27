@@ -4,6 +4,9 @@
 *
 *   Author: Antoine Quint
 *
+*   This code is licensed under the terms of the CC0 1.0 Universal license.
+*   > http://creativecommons.org/about/cc0
+*
 *****/
 
 function PathParserHandler (context) {
