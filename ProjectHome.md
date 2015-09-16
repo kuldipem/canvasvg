@@ -1,0 +1,5 @@
+CanvaSVG is an experiment I am conducting to get a better idea of what you can and cannot do with the `<canvas>` element suggested for HTML 5. The current goal of CanvaSVG is to provide as much of a mapping of `<canvas>` functionalities using the SVG Tiny 1.2 grammar as possible. While ideally I could try to achieve full compliance with the Conforming Static SVG Tiny 1.2 Viewer conformance criterion, in other words implement the static graphic features of SVG Tiny 1.2 and leave out complex things like scripting and animation support.
+
+To the extent possible under law, Antoine Quint has waived all copyright and related or neighboring rights to CanvaSVG.
+
+<a href='http://creativecommons.org/publicdomain/zero/1.0/'><img src='http://i.creativecommons.org/l/zero/1.0/88x31.png' alt='CC0' border='0' /></a>
